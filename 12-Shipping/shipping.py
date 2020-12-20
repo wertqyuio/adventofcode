@@ -3,8 +3,20 @@ def main():
     # Each instruction is an action and magnitude.
     f = open("data.txt", "r")
     instructions = []
-    distance = [0, 0, 0, 0]
-    orientation = 1
+    distance = [0, 0]
+    waypoint = [1, 10]
+
+    def orientation(angle, waypoint):
+        temp = waypoint[0]
+        if angle == 1:
+            waypoint[0] = waypoint[1]
+            waypoint[1] = -temp
+        elif angle == 2:
+            waypoint[0] = -waypoint[0]
+            waypoint[1] = -waypoint[1]
+        elif angle == 3:
+            waypoint[0] = -waypoint[1]
+            waypoint[1] = temp
 
     for line in f:
         process_line = line.strip('\n')
@@ -15,15 +27,20 @@ def main():
         magnitude = instruction[1]
         if action in ["N", "E", "S", "W"]:
             idx = ["N", "E", "S", "W"].index(action)
-            distance[idx] += magnitude
+            if idx < 2:
+                waypoint[idx % 2] += magnitude
+            else:
+                waypoint[idx % 2] -= magnitude
         elif action == "L":
-            orientation = (orientation - magnitude//90) % 4
+            print(magnitude)
+            orientation(magnitude//90 % 4, waypoint)
         elif action == "R":
-            orientation = (orientation + magnitude//90) % 4
+            orientation(-magnitude//90 % 4, waypoint)
         else:
-            distance[orientation] += magnitude
+            for idx in range(len(waypoint)):
+                distance[idx] += waypoint[(idx) % 2]*magnitude
 
-    print(abs(distance[0]-distance[2])+abs(distance[1]-distance[3]))
+    print(abs(distance[0])+abs(distance[1]))
 
 
 if __name__ == "__main__":
